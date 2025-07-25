@@ -1,0 +1,38 @@
+# Бинарные файлы
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Каталог с результатами сборки
+bin/
+build/
+
+# Файлы IDE и редакторов
+.vscode/
+.idea/
+*.iml
+
+# Файлы системы
+.DS_Store
+Thumbs.db
+
+# Файлы модулей и кеша
+go.sum
+vendor/
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# Файлы операционной системы
+desktop.ini
+
+*.xlsx
+*.json
+
+json2xlsx

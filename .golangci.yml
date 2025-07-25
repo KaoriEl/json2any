@@ -1,0 +1,82 @@
+version: "2"
+run:
+  tests: true
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - bodyclose
+    - dogsled
+    # - dupl
+    - durationcheck
+    - errorlint
+    - exhaustive
+    - funlen
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - govet
+    - importas
+    - ineffassign
+    - lll
+    - makezero
+    - misspell
+    - nestif
+    - nilerr
+    - noctx
+    - nolintlint
+    - prealloc
+    - predeclared
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - tagliatelle
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - wastedassign
+    - whitespace
+    - wrapcheck
+    - nakedret
+  settings:
+    funlen:
+      lines: 150
+      statements: 80
+    lll:
+      line-length: 150
+    gocyclo:
+      max-complexity: 15
+    revive:
+      ignore-generated-header: true
+      severity: warning
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
