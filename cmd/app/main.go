@@ -6,11 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/KaoriEl/json2xlsx/internal/utils"
-
 	"github.com/KaoriEl/json2xlsx/internal/exporter"
 	"github.com/KaoriEl/json2xlsx/internal/loader"
 	"github.com/KaoriEl/json2xlsx/internal/processor"
+	"github.com/KaoriEl/json2xlsx/internal/utils"
 )
 
 func main() {
@@ -22,21 +21,22 @@ func main() {
 
 	records, err := ld.Load(filePath)
 	if err != nil {
-		panic(err)
+		printErrorAndExit(fmt.Errorf("ошибка загрузки файла: %w", err))
 	}
+
 	if len(records) == 0 {
-		fmt.Println("Empty JSON")
-		return
+		_, _ = fmt.Fprintln(os.Stderr, "JSON-файл пуст")
+		os.Exit(1)
 	}
 
 	processed, err := pr.Process(records, maxWorkers)
 	if err != nil {
-		panic(err)
+		printErrorAndExit(fmt.Errorf("ошибка обработки данных: %w", err))
 	}
 
 	keys := records[0].Keys()
 	if err := ex.ExportWithTheme(outputFile, keys, processed, theme); err != nil {
-		panic(err)
+		printErrorAndExit(fmt.Errorf("ошибка экспорта в Excel: %w", err))
 	}
 
 	fmt.Printf("Файл сохранён: %s\n", outputFile)
@@ -59,13 +59,13 @@ func parseArgs() (string, string, string, int) {
 	switch strings.ToLower(*theme) {
 	case "black", "green", "red", "purple", "none":
 	default:
-		fmt.Println("Неверная тема. Допустимые значения: black, green, red, purple, none")
+		fmt.Fprintln(os.Stderr, "Неверная тема. Допустимые значения: black, green, red, purple, none")
 		printHelp()
 		os.Exit(1)
 	}
 
 	if *maxWorkers <= 0 {
-		fmt.Println("max_workers должен быть положительным числом")
+		fmt.Fprintln(os.Stderr, "max_workers должен быть положительным числом")
 		printHelp()
 		os.Exit(1)
 	}
@@ -76,10 +76,16 @@ func parseArgs() (string, string, string, int) {
 func printHelp() {
 	fmt.Println(`Использование:
   --input       Путь к входному JSON файлу (обязательно)
-  --output      Путь к выходному XLSX файлу (по умолчанию "output.xlsx")
+  --output      Путь к выходному XLSX файлу (по умолчанию random.xlsx)
   --theme       Тема оформления: black, green, red, purple, none (по умолчанию black)
   --max_workers Максимальное количество горутин (int > 0, по умолчанию 20)
   --help        Показать справку
+
 Пример:
-  go run main.go --input data.json --output result.xlsx --theme green --max_workers 30`)
+  json2xlsx --input=data.json --output=result.xlsx --theme=green --max_workers=30`)
+}
+
+func printErrorAndExit(err error) {
+	_, _ = fmt.Fprintf(os.Stderr, "Ошибка: %v\n", err)
+	os.Exit(1)
 }
