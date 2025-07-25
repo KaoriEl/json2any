@@ -34,7 +34,7 @@ func tryParseDate(input string) (time.Time, error) {
 			return t, nil
 		}
 	}
-	return time.Time{}, fmt.Errorf("не дата")
+	return time.Time{}, fmt.Errorf("не удалось распознать дату: %q", input)
 }
 
 func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int) ([]models.ProcessedRow, error) {
