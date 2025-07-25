@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/KaoriEl/json2xlsx/internal/exporter"
 	"github.com/KaoriEl/json2xlsx/internal/loader"
@@ -13,6 +14,8 @@ import (
 )
 
 func main() {
+	start := time.Now()
+
 	filePath, outputFile, theme, maxWorkers := parseArgs()
 
 	ld := loader.NewJSONLoader()
@@ -40,6 +43,7 @@ func main() {
 	}
 
 	fmt.Printf("Файл сохранён: %s\n", outputFile)
+	fmt.Printf("Время выполнения: %s\n", time.Since(start).Truncate(time.Millisecond))
 }
 
 func parseArgs() (string, string, string, int) {
