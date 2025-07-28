@@ -11,7 +11,7 @@ import (
 )
 
 type DataProcessor interface {
-	Process(records []*orderedmap.OrderedMap, maxWorkers int) ([]models.ProcessedRow, error)
+	Process(records []*orderedmap.OrderedMap, maxWorkers int, onProgress func(current int)) ([]models.ProcessedRow, error)
 }
 
 type processor struct{}
@@ -34,10 +34,10 @@ func tryParseDate(input string) (time.Time, error) {
 			return t, nil
 		}
 	}
-	return time.Time{}, fmt.Errorf("не удалось распознать дату: %q", input)
+	return time.Time{}, fmt.Errorf("не удалось распознать дату из строки: %q", input)
 }
 
-func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int) ([]models.ProcessedRow, error) {
+func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int, onProgress func(current int)) ([]models.ProcessedRow, error) {
 	if maxWorkers <= 0 {
 		maxWorkers = 20
 	}
@@ -46,7 +46,6 @@ func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int) ([
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var firstErr error
-
 	sem := make(chan struct{}, maxWorkers)
 
 	processRecord := func(record *orderedmap.OrderedMap) models.ProcessedRow {
@@ -70,11 +69,14 @@ func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int) ([
 			mu.Lock()
 			result[i] = row
 			mu.Unlock()
+
+			if onProgress != nil {
+				onProgress(i + 1)
+			}
 		}(i, record)
 	}
 
 	wg.Wait()
-
 	return result, firstErr
 }
 
