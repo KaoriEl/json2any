@@ -1,4 +1,4 @@
-# JSON to XLSX Exporter
+# JSON to Any Exporter
 
 📘 Documentation available in other languages:
 - [Русский](README.ru.md)
@@ -6,13 +6,14 @@
 - [Español](README.es.md)
 - [Deutsch](README.de.md)  
 
-A CLI tool for converting JSON files into Excel (.xlsx) format with support for theming, data type formatting, and parallel processing.
+A CLI tool for converting between JSON and Excel (.xlsx), CSV, and TXT formats with support for theming, data type formatting, parallel processing, and bidirectional conversion.
 
 ---
 
 ## Features
 
-* Convert arrays of JSON objects into `.xlsx` spreadsheets.
+* **Export**: Convert JSON files into `.xlsx`, `.csv`, and `.txt` formats.
+* **Import**: Convert `.xlsx`, `.csv`, and `.txt` files into JSON format.
 * Supports themes: `black`, `green`, `red`, `purple`, `none`.
 * Correct formatting for numbers, dates, strings, and booleans.
 * Parallel processing with configurable worker count.
@@ -24,36 +25,62 @@ A CLI tool for converting JSON files into Excel (.xlsx) format with support for 
 
 ```bash
 go build -o json2xlsx ./cmd/app/main.go
-```
+````
 
 ---
 
 ## Installation (for system-wide access)
 
 ```bash
-sudo cp json2xlsx /usr/local/bin/
+go install github.com/KaoriEl/json2xlsx@latest
 ```
 
 ---
 
 ## Usage
 
-### With `go run`:
+### Exporting JSON to Other Formats
+
+Convert JSON data into `.xlsx`, `.csv`, or `.txt` formats with customizable options.
+
+#### Example: Export to XLSX
 
 ```bash
-go run ./cmd/app/main.go -i example.json -o result.xlsx --theme=green --max_workers=100 --show_metrics=true
+json2xlsx export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
 ```
 
-### With compiled binary in current directory:
+#### Example: Export to CSV
 
 ```bash
-./json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10
+json2xlsx export -i example.json -o result.csv --format=csv --max_workers=10
 ```
 
-### From anywhere (if installed system-wide):
+#### Example: Export to TXT
 
 ```bash
-json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10
+json2xlsx export -i example.json -o result.txt --format=txt --max_workers=5
+```
+
+### Importing from Other Formats to JSON
+
+Convert `.xlsx`, `.csv`, or `.txt` files into JSON format.
+
+#### Example: Import from XLSX to JSON
+
+```bash
+json2xlsx import -i example.xlsx -o result.json --format=xlsx --max_workers=10
+```
+
+#### Example: Import from CSV to JSON
+
+```bash
+json2xlsx import -i example.csv -o result.json --format=csv --max_workers=10
+```
+
+#### Example: Import from TXT to JSON
+
+```bash
+json2xlsx import -i example.txt -o result.json --format=txt --max_workers=10
 ```
 
 ---
@@ -68,11 +95,11 @@ json2xlsx --help
 
 ## CLI Flags
 
-| Flag             | Description                                                               |
-| ---------------- | ------------------------------------------------------------------------- |
-| `--input, -i`    | **(Required)** Path to the input JSON file.                               |
-| `--output, -o`   | Path to the output XLSX file. Default: `random.xlsx`.                     |
-| `--theme`        | Table theme: `black`, `green`, `red`, `purple`, `none`. Default: `black`. |
-| `--max_workers`  | Number of parallel workers. Integer > 0. Default: `20`.                   |
-| `--show_metrics` | Show processing metrics after completion. Default: `false`.               |
-
+| Flag             | Description                                                                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--input, -i`    | **(Required)** Path to the input file (JSON for export, XLSX/CSV/TXT for import).                                                                   |
+| `--output, -o`   | Path to the output file. Default: `random.xlsx` (for export) or `output.json` (for import).                                                         |
+| `--format`       | Output format for export: `xlsx`, `csv`, or `txt`. Input format for import: `xlsx`, `csv`, or `txt`. Default: `xlsx` for export, `xlsx` for import. |
+| `--theme`        | Table theme: `black`, `green`, `red`, `purple`, `none`. Default: `black`. (Export only)                                                             |
+| `--max_workers`  | Number of parallel workers. Integer > 0. Default: `20`.                                                                                             |
+| `--show_metrics` | Show processing metrics after completion. Default: `false`.                                                                                         |

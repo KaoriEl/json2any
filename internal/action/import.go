@@ -3,72 +3,80 @@ package action
 import (
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
-	"github.com/KaoriEl/json2xlsx/internal/exporter"
 	"github.com/KaoriEl/json2xlsx/internal/loader"
+
+	"github.com/KaoriEl/json2xlsx/internal/exporter"
 	"github.com/KaoriEl/json2xlsx/internal/processor"
 	"github.com/KaoriEl/json2xlsx/internal/utils"
 	"github.com/alperdrsnn/clime"
 	"github.com/urfave/cli/v2"
 )
 
-func RunExport(c *cli.Context) error {
+type LoadFunc func(string) ([]map[string]string, error)
+
+func RunImportXLSX(c *cli.Context) error {
+	return runImportGeneric(c, loader.NewLoader().LoadXLSX)
+}
+
+func RunImportCSV(c *cli.Context) error {
+	return runImportGeneric(c, loader.NewLoader().LoadCSV)
+}
+
+func RunImportTXT(c *cli.Context) error {
+	return runImportGeneric(c, loader.NewLoader().LoadTXT)
+}
+
+func runImportGeneric(c *cli.Context, loadFunc LoadFunc) error {
 	clime.Clear()
-	clime.NewBanner("JSON ➜ XLSX Exporter", clime.BannerSuccess).
+	clime.NewBanner("Import to JSON", clime.BannerSuccess).
 		WithStyle(clime.BannerStyleDouble).
-		WithColor(clime.BrightCyanColor).
+		WithColor(clime.BrightGreenColor).
 		WithBorderColor(clime.BrightBlueColor).
 		Println()
 
 	input := c.String("input")
 	output := c.String("output")
 	if output == "" {
-		output = utils.RandomFileName() + ".xlsx"
+		output = utils.RandomFileName() + ".json"
 	}
-	theme := strings.ToLower(c.String("theme"))
-	maxWorkers := c.Int("max_workers")
 
-	if err := validateTheme(theme); err != nil {
-		return cli.Exit(err.Error(), 1)
-	}
+	maxWorkers := c.Int("max_workers")
 	if maxWorkers <= 0 {
-		return cli.Exit("max_workers must be a positive number", 1)
+		maxWorkers = 20
 	}
 
 	start := time.Now()
-
-	clime.InfoLine("Loading JSON file...")
-	loadStart := time.Now()
 
 	if _, err := os.Stat(input); os.IsNotExist(err) {
 		clime.ErrorLine(fmt.Sprintf("File not found: %s", input))
 		return cli.Exit("", 1)
 	}
 
-	ld := loader.NewLoader()
-	records, err := ld.LoadJson(input)
+	clime.InfoLine("Loading input file...")
+	loadStart := time.Now()
+
+	records, err := loadFunc(input)
 	if err != nil {
-		clime.ErrorLine(err.Error())
+		clime.ErrorLine(fmt.Sprintf("Failed to load input: %v", err))
 		return cli.Exit("", 1)
 	}
 	if len(records) == 0 {
-		clime.ErrorLine("JSON file is empty")
+		clime.ErrorLine("Input file is empty")
 		return cli.Exit("", 1)
 	}
 	loadDuration := time.Since(loadStart)
 
 	clime.SuccessLine(fmt.Sprintf("Loaded %d records", len(records)))
 
-	bar := clime.NewProgressBar(int64(len(records))).
-		WithLabel("Processing data").
-		WithStyle(clime.ProgressStyleModern).
-		WithColor(clime.BrightCyanColor).
-		ShowRate(true)
-
 	pr := processor.NewProcessor()
+	bar := clime.NewProgressBar(int64(len(records))).
+		WithLabel("Processing rows").
+		WithStyle(clime.ProgressStyleModern).
+		WithColor(clime.BrightGreenColor).
+		ShowRate(true)
 
 	var mu sync.Mutex
 	total := len(records)
@@ -79,7 +87,7 @@ func RunExport(c *cli.Context) error {
 
 	processStart := time.Now()
 
-	processed, err := pr.ProcessOrderedMaps(records, maxWorkers, func(current int) {
+	processed, err := pr.ProcessStringMaps(records, maxWorkers, func(current int) {
 		mu.Lock()
 		defer mu.Unlock()
 
@@ -89,34 +97,17 @@ func RunExport(c *cli.Context) error {
 		}
 	})
 	if err != nil {
-		clime.ErrorLine(err.Error())
+		clime.ErrorLine(fmt.Sprintf("Failed to process data: %v", err))
 		return cli.Exit("", 1)
 	}
 	processDuration := time.Since(processStart)
 
-	ex := exporter.NewExcelExporter()
-	keys := records[0].Keys()
-
-	exportBar := clime.NewProgressBar(int64(len(processed))).
-		WithLabel("Exporting to Excel").
-		WithStyle(clime.ProgressStyleModern).
-		WithColor(clime.BrightGreenColor).
-		ShowRate(true)
-
+	xp := exporter.NewJSONExporter()
 	exportStart := time.Now()
 
-	err = ex.ExportWithTheme(output, keys, processed, theme, func(current, total int) {
-		mu.Lock()
-		defer mu.Unlock()
-
-		exportBar.Set(int64(current))
-		if current%100 == 0 || current == total {
-			exportBar.Print()
-		}
-	})
-	if err != nil {
-		clime.ErrorLine(err.Error())
-		time.Sleep(2 * time.Second) // Pause to show error
+	clime.InfoLine("Writing JSON file...")
+	if err := xp.Export(output, processed); err != nil {
+		clime.ErrorLine(fmt.Sprintf("Failed to write JSON: %v", err))
 		return cli.Exit("", 1)
 	}
 	exportDuration := time.Since(exportStart)
@@ -129,11 +120,11 @@ func RunExport(c *cli.Context) error {
 		Println()
 
 	if c.Bool("show_metrics") {
-		showMetric(
+		showImportMetrics(
 			output,
 			start,
-			len(records),   // recordsIn
-			len(processed), // recordsOut
+			len(records),
+			len(processed),
 			loadDuration,
 			processDuration,
 			exportDuration,
@@ -143,21 +134,7 @@ func RunExport(c *cli.Context) error {
 	return nil
 }
 
-func validateTheme(theme string) error {
-	validThemes := map[string]bool{
-		"black":  true,
-		"green":  true,
-		"red":    true,
-		"purple": true,
-		"none":   true,
-	}
-	if !validThemes[theme] {
-		return fmt.Errorf("invalid theme: %s. Allowed: black, green, red, purple, none", theme)
-	}
-	return nil
-}
-
-func showMetric(output string, start time.Time, recordsIn, recordsOut int, loadDuration, processDuration, exportDuration time.Duration) {
+func showImportMetrics(output string, start time.Time, recordsIn, recordsOut int, loadDuration, processDuration, exportDuration time.Duration) {
 	fileSize, err := utils.FileSizeMB(output)
 	if err != nil {
 		fileSize = "failed to determine file size"
@@ -168,7 +145,7 @@ func showMetric(output string, start time.Time, recordsIn, recordsOut int, loadD
 		AddColumn("Value").
 		SetColumnColor(1, clime.Info).
 		AddRow("Total time", time.Since(start).Truncate(time.Millisecond).String()).
-		AddRow("JSON load time", loadDuration.String()).
+		AddRow("XLSX load time", loadDuration.String()).
 		AddRow("Processing time", processDuration.String()).
 		AddRow("Export time", exportDuration.String()).
 		AddRow("Records count (input)", fmt.Sprintf("%d", recordsIn)).

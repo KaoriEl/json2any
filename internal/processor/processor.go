@@ -11,7 +11,8 @@ import (
 )
 
 type DataProcessor interface {
-	Process(records []*orderedmap.OrderedMap, maxWorkers int, onProgress func(current int)) ([]models.ProcessedRow, error)
+	ProcessOrderedMaps(records []*orderedmap.OrderedMap, maxWorkers int, onProgress func(current int)) ([]models.ProcessedRow, error)
+	ProcessStringMaps(records []map[string]string, maxWorkers int, onProgress func(current int)) ([]map[string]interface{}, error)
 }
 
 type processor struct{}
@@ -37,7 +38,11 @@ func tryParseDate(input string) (time.Time, error) {
 	return time.Time{}, fmt.Errorf("failed to parse date from string: %q", input)
 }
 
-func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int, onProgress func(current int)) ([]models.ProcessedRow, error) {
+func (p *processor) ProcessOrderedMaps(
+	records []*orderedmap.OrderedMap,
+	maxWorkers int,
+	onProgress func(current int),
+) ([]models.ProcessedRow, error) {
 	if maxWorkers <= 0 {
 		maxWorkers = 20
 	}
@@ -80,6 +85,47 @@ func (p *processor) Process(records []*orderedmap.OrderedMap, maxWorkers int, on
 	return result, firstErr
 }
 
+func (p *processor) ProcessStringMaps(records []map[string]string, maxWorkers int, onProgress func(current int)) ([]map[string]interface{}, error) {
+	if maxWorkers <= 0 {
+		maxWorkers = 20
+	}
+
+	result := make([]map[string]interface{}, len(records))
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	sem := make(chan struct{}, maxWorkers)
+
+	processRecord := func(record map[string]string) map[string]interface{} {
+		row := make(map[string]interface{})
+		for key, rawValue := range record {
+			row[key] = normalizeStringValue(rawValue)
+		}
+		return row
+	}
+
+	wg.Add(len(records))
+	for i, record := range records {
+		sem <- struct{}{}
+		go func(i int, record map[string]string) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			row := processRecord(record)
+
+			mu.Lock()
+			result[i] = row
+			mu.Unlock()
+
+			if onProgress != nil {
+				onProgress(i + 1)
+			}
+		}(i, record)
+	}
+
+	wg.Wait()
+	return result, nil
+}
+
 func normalizeValue(rawValue interface{}) interface{} {
 	switch v := rawValue.(type) {
 	case float64:
@@ -105,4 +151,22 @@ func normalizeValue(rawValue interface{}) interface{} {
 	default:
 		return fmt.Sprintf("%v", v)
 	}
+}
+
+func normalizeStringValue(rawValue string) interface{} {
+	if rawValue == "" {
+		return ""
+	}
+
+	if parsedTime, err := tryParseDate(rawValue); err == nil {
+		return parsedTime
+	}
+	if num, err := strconv.ParseFloat(rawValue, 64); err == nil {
+		if num == float64(int64(num)) {
+			return int64(num)
+		}
+		return num
+	}
+
+	return rawValue
 }

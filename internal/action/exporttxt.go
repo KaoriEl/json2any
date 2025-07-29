@@ -3,11 +3,11 @@ package action
 import (
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/KaoriEl/json2xlsx/internal/exporter"
+
 	"github.com/KaoriEl/json2xlsx/internal/loader"
 	"github.com/KaoriEl/json2xlsx/internal/processor"
 	"github.com/KaoriEl/json2xlsx/internal/utils"
@@ -15,9 +15,9 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func RunExport(c *cli.Context) error {
+func RunExportTXT(c *cli.Context) error {
 	clime.Clear()
-	clime.NewBanner("JSON ➜ XLSX Exporter", clime.BannerSuccess).
+	clime.NewBanner("JSON ➜ TXT Exporter", clime.BannerSuccess).
 		WithStyle(clime.BannerStyleDouble).
 		WithColor(clime.BrightCyanColor).
 		WithBorderColor(clime.BrightBlueColor).
@@ -26,14 +26,10 @@ func RunExport(c *cli.Context) error {
 	input := c.String("input")
 	output := c.String("output")
 	if output == "" {
-		output = utils.RandomFileName() + ".xlsx"
+		output = utils.RandomFileName() + ".txt"
 	}
-	theme := strings.ToLower(c.String("theme"))
 	maxWorkers := c.Int("max_workers")
 
-	if err := validateTheme(theme); err != nil {
-		return cli.Exit(err.Error(), 1)
-	}
 	if maxWorkers <= 0 {
 		return cli.Exit("max_workers must be a positive number", 1)
 	}
@@ -94,18 +90,17 @@ func RunExport(c *cli.Context) error {
 	}
 	processDuration := time.Since(processStart)
 
-	ex := exporter.NewExcelExporter()
-	keys := records[0].Keys()
+	ex := exporter.NewTXTExporter() // <-- твой TXT экспортер (нужно реализовать)
 
 	exportBar := clime.NewProgressBar(int64(len(processed))).
-		WithLabel("Exporting to Excel").
+		WithLabel("Exporting to TXT").
 		WithStyle(clime.ProgressStyleModern).
 		WithColor(clime.BrightGreenColor).
 		ShowRate(true)
 
 	exportStart := time.Now()
 
-	err = ex.ExportWithTheme(output, keys, processed, theme, func(current, total int) {
+	err = ex.Export(output, processed, func(current, total int) {
 		mu.Lock()
 		defer mu.Unlock()
 
@@ -116,7 +111,7 @@ func RunExport(c *cli.Context) error {
 	})
 	if err != nil {
 		clime.ErrorLine(err.Error())
-		time.Sleep(2 * time.Second) // Pause to show error
+		time.Sleep(2 * time.Second)
 		return cli.Exit("", 1)
 	}
 	exportDuration := time.Since(exportStart)
@@ -132,8 +127,8 @@ func RunExport(c *cli.Context) error {
 		showMetric(
 			output,
 			start,
-			len(records),   // recordsIn
-			len(processed), // recordsOut
+			len(records),
+			len(processed),
 			loadDuration,
 			processDuration,
 			exportDuration,
@@ -141,39 +136,4 @@ func RunExport(c *cli.Context) error {
 	}
 
 	return nil
-}
-
-func validateTheme(theme string) error {
-	validThemes := map[string]bool{
-		"black":  true,
-		"green":  true,
-		"red":    true,
-		"purple": true,
-		"none":   true,
-	}
-	if !validThemes[theme] {
-		return fmt.Errorf("invalid theme: %s. Allowed: black, green, red, purple, none", theme)
-	}
-	return nil
-}
-
-func showMetric(output string, start time.Time, recordsIn, recordsOut int, loadDuration, processDuration, exportDuration time.Duration) {
-	fileSize, err := utils.FileSizeMB(output)
-	if err != nil {
-		fileSize = "failed to determine file size"
-	}
-
-	clime.NewTable().
-		AddColumn("Metric").
-		AddColumn("Value").
-		SetColumnColor(1, clime.Info).
-		AddRow("Total time", time.Since(start).Truncate(time.Millisecond).String()).
-		AddRow("JSON load time", loadDuration.String()).
-		AddRow("Processing time", processDuration.String()).
-		AddRow("Export time", exportDuration.String()).
-		AddRow("Records count (input)", fmt.Sprintf("%d", recordsIn)).
-		AddRow("Records count (processed)", fmt.Sprintf("%d", recordsOut)).
-		AddRow("File size", fileSize).
-		AddRow("Processing speed", fmt.Sprintf("%.2f records/sec", float64(recordsOut)/processDuration.Seconds())).
-		Print()
 }

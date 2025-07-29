@@ -34,5 +34,7 @@ desktop.ini
 
 *.xlsx
 *.json
+*.txt
+*.csv
 
 json2xlsx
