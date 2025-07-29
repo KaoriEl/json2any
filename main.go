@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/KaoriEl/json2xlsx/internal/definitions"
+	"github.com/KaoriEl/json2any/internal/definitions"
 	"os"
 
 	"github.com/alperdrsnn/clime"
 
-	"github.com/KaoriEl/json2xlsx/internal/action"
+	"github.com/KaoriEl/json2any/internal/action"
 	"github.com/urfave/cli/v2"
 )
 

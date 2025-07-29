@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/KaoriEl/json2xlsx/internal/models"
+	"github.com/KaoriEl/json2any/internal/models"
 )
 
 type CSVExporter interface {

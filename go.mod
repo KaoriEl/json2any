@@ -1,4 +1,4 @@
-module github.com/KaoriEl/json2xlsx
+module github.com/KaoriEl/json2any
 
 go 1.24.4
 

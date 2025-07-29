@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/KaoriEl/json2xlsx/internal/models"
+	"github.com/KaoriEl/json2any/internal/models"
 )
 
 type TXTExporter interface {
