@@ -1,20 +1,22 @@
 # JSON to XLSX Exporter
 
-CLI-инструмент для конвертации JSON-файлов в Excel (.xlsx) с поддержкой тем оформления, типизацией данных и параллельной обработкой.
+📘 Documentation available in other languages: [Русский](README.ru.md)
+
+A CLI tool for converting JSON files into Excel (.xlsx) format with support for theming, data type formatting, and parallel processing.
 
 ---
 
-## Возможности
+## Features
 
-* Конвертация JSON-массивов объектов в `.xlsx` таблицу.
-* Поддержка тем оформления: `black`, `green`, `red`, `purple`, `none`.
-* Корректное форматирование чисел, дат, строк и булевых значений.
-* Параллельная обработка с возможностью указания количества воркеров.
-* Вывод метрик выполнения (по желанию).
+* Convert arrays of JSON objects into `.xlsx` spreadsheets.
+* Supports themes: `black`, `green`, `red`, `purple`, `none`.
+* Correct formatting for numbers, dates, strings, and booleans.
+* Parallel processing with configurable worker count.
+* Optional performance metrics output after completion.
 
 ---
 
-## Сборка
+## Build
 
 ```bash
 go build -o json2xlsx ./cmd/app/main.go
@@ -22,7 +24,7 @@ go build -o json2xlsx ./cmd/app/main.go
 
 ---
 
-## Установка (доступность из любой директории)
+## Installation (for system-wide access)
 
 ```bash
 sudo cp json2xlsx /usr/local/bin/
@@ -30,29 +32,29 @@ sudo cp json2xlsx /usr/local/bin/
 
 ---
 
-## Использование
+## Usage
 
-### Через `go run` (без сборки):
+### With `go run`:
 
 ```bash
 go run ./cmd/app/main.go -i example.json -o result.xlsx --theme=green --max_workers=100 --show_metrics=true
 ```
 
-### Через исполняемый файл из текущей директории:
+### With compiled binary in current directory:
 
 ```bash
-./json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10 
+./json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10
 ```
 
-### Из любой директории (если установлен в систему):
+### From anywhere (if installed system-wide):
 
 ```bash
-json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10 
+json2xlsx -i example.json -o result.xlsx --theme=green --max_workers=10
 ```
 
 ---
 
-## Справка
+## Help
 
 ```bash
 json2xlsx --help
@@ -60,14 +62,13 @@ json2xlsx --help
 
 ---
 
-## Аргументы CLI
+## CLI Flags
 
-| Параметр         | Описание                                                                                   |
-| ---------------- | ------------------------------------------------------------------------------------------ |
-| `--input, -i`    | **(Обязательный)** Путь к входному JSON-файлу.                                             |
-| `--output, -o`   | Путь к выходному XLSX-файлу. По умолчанию: `random.xlsx`.                                  |
-| `--theme`        | Тема оформления таблицы: `black`, `green`, `red`, `purple`, `none`. По умолчанию: `black`. |
-| `--max_workers`  | Количество параллельных воркеров. Целое число > 0. По умолчанию: `20`.                     |
-| `--show_metrics` | Флаг. Показывает статистику после завершения обработки. По умолчанию: `false`.             |
-
+| Flag             | Description                                                               |
+| ---------------- | ------------------------------------------------------------------------- |
+| `--input, -i`    | **(Required)** Path to the input JSON file.                               |
+| `--output, -o`   | Path to the output XLSX file. Default: `random.xlsx`.                     |
+| `--theme`        | Table theme: `black`, `green`, `red`, `purple`, `none`. Default: `black`. |
+| `--max_workers`  | Number of parallel workers. Integer > 0. Default: `20`.                   |
+| `--show_metrics` | Show processing metrics after completion. Default: `false`.               |
 
