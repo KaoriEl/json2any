@@ -2,7 +2,9 @@ package action
 
 import (
 	"fmt"
+	"github.com/KaoriEl/json2xlsx/internal/definitions"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,20 +20,20 @@ import (
 type LoadFunc func(string) ([]map[string]string, error)
 
 func RunImportXLSX(c *cli.Context) error {
-	return runImportGeneric(c, loader.NewLoader().LoadXLSX)
+	return runImportGeneric(c, loader.NewLoader().LoadXLSX, strings.ToUpper(definitions.DefaultFormatXLSX))
 }
 
 func RunImportCSV(c *cli.Context) error {
-	return runImportGeneric(c, loader.NewLoader().LoadCSV)
+	return runImportGeneric(c, loader.NewLoader().LoadCSV, strings.ToUpper(definitions.DefaultFormatCSV))
 }
 
 func RunImportTXT(c *cli.Context) error {
-	return runImportGeneric(c, loader.NewLoader().LoadTXT)
+	return runImportGeneric(c, loader.NewLoader().LoadTXT, strings.ToUpper(definitions.DefaultFormatTXT))
 }
 
-func runImportGeneric(c *cli.Context, loadFunc LoadFunc) error {
+func runImportGeneric(c *cli.Context, loadFunc LoadFunc, format string) error {
 	clime.Clear()
-	clime.NewBanner("Import to JSON", clime.BannerSuccess).
+	clime.NewBanner(fmt.Sprintf("Import %s to JSON", format), clime.BannerSuccess).
 		WithStyle(clime.BannerStyleDouble).
 		WithColor(clime.BrightGreenColor).
 		WithBorderColor(clime.BrightBlueColor).
