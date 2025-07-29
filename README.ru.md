@@ -24,7 +24,7 @@
 ## Сборка
 
 ```bash
-go build -o json2xlsx ./cmd/app/main.go
+go build -o json2any ./cmd/app/main.go
 ```
 
 ---
@@ -46,19 +46,19 @@ go install github.com/KaoriEl/json2any@latest
 #### Пример: Экспорт в XLSX
 
 ```bash
-json2xlsx export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
+json2any export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
 ```
 
 #### Пример: Экспорт в CSV
 
 ```bash
-json2xlsx export -i example.json -o result.csv --format=csv --max_workers=10
+json2any export -i example.json -o result.csv --format=csv --max_workers=10
 ```
 
 #### Пример: Экспорт в TXT
 
 ```bash
-json2xlsx export -i example.json -o result.txt --format=txt --max_workers=5
+json2any export -i example.json -o result.txt --format=txt --max_workers=5
 ```
 
 ### Импорт из других форматов в JSON
@@ -68,19 +68,19 @@ json2xlsx export -i example.json -o result.txt --format=txt --max_workers=5
 #### Пример: Импорт из XLSX в JSON
 
 ```bash
-json2xlsx import -i example.xlsx -o result.json --format=xlsx --max_workers=10
+json2any import -i example.xlsx -o result.json --format=xlsx --max_workers=10
 ```
 
 #### Пример: Импорт из CSV в JSON
 
 ```bash
-json2xlsx import -i example.csv -o result.json --format=csv --max_workers=10
+json2any import -i example.csv -o result.json --format=csv --max_workers=10
 ```
 
 #### Пример: Импорт из TXT в JSON
 
 ```bash
-json2xlsx import -i example.txt -o result.json --format=txt --max_workers=10
+json2any import -i example.txt -o result.json --format=txt --max_workers=10
 ```
 
 ---
@@ -88,7 +88,7 @@ json2xlsx import -i example.txt -o result.json --format=txt --max_workers=10
 ## Помощь
 
 ```bash
-json2xlsx --help
+json2any --help
 ```
 
 ---

@@ -13,7 +13,7 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "json2xlsx",
+		Name:  "json2any",
 		Usage: "Convert between JSON and Excel|CSV|TXT formats",
 		Commands: []*cli.Command{
 			{

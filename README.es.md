@@ -25,7 +25,7 @@ Herramienta de línea de comandos para convertir entre formatos JSON y Excel (.x
 ## Compilación
 
 ```bash
-go build -o json2xlsx ./cmd/app/main.go
+go build -o json2any ./cmd/app/main.go
 ```
 
 ---
@@ -47,19 +47,19 @@ Convertir datos JSON a formatos `.xlsx`, `.csv` o `.txt` con parámetros persona
 #### Ejemplo: Exportar a XLSX
 
 ```bash
-json2xlsx export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
+json2any export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
 ```
 
 #### Ejemplo: Exportar a CSV
 
 ```bash
-json2xlsx export -i example.json -o result.csv --format=csv --max_workers=10
+json2any export -i example.json -o result.csv --format=csv --max_workers=10
 ```
 
 #### Ejemplo: Exportar a TXT
 
 ```bash
-json2xlsx export -i example.json -o result.txt --format=txt --max_workers=5
+json2any export -i example.json -o result.txt --format=txt --max_workers=5
 ```
 
 ### Importar desde otros formatos a JSON
@@ -69,19 +69,19 @@ Convertir archivos `.xlsx`, `.csv` o `.txt` a formato JSON.
 #### Ejemplo: Importar desde XLSX a JSON
 
 ```bash
-json2xlsx import -i example.xlsx -o result.json --format=xlsx --max_workers=10
+json2any import -i example.xlsx -o result.json --format=xlsx --max_workers=10
 ```
 
 #### Ejemplo: Importar desde CSV a JSON
 
 ```bash
-json2xlsx import -i example.csv -o result.json --format=csv --max_workers=10
+json2any import -i example.csv -o result.json --format=csv --max_workers=10
 ```
 
 #### Ejemplo: Importar desde TXT a JSON
 
 ```bash
-json2xlsx import -i example.txt -o result.json --format=txt --max_workers=10
+json2any import -i example.txt -o result.json --format=txt --max_workers=10
 ```
 
 ---
@@ -89,7 +89,7 @@ json2xlsx import -i example.txt -o result.json --format=txt --max_workers=10
 ## Ayuda
 
 ```bash
-json2xlsx --help
+json2any --help
 ```
 
 ---
