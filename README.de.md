@@ -1,28 +1,32 @@
-# JSON zu Beliebigem Exporter
+<p align="center">
+  <img src="img/logo.jpg" alt="JSON to Any Exporter Logo" width="250"/>
+</p>
 
-📘 Dokumentation ist in anderen Sprachen verfügbar:
+# 🔧 JSON to Any Exporter
 
-* [English](README.md)
-* [Русский](README.ru.md)
-* [Español](README.es.md)
-* [简体中文](README.zh.md)
+📘 Dokumentation in weiteren Sprachen verfügbar:
 
-Kommandozeilenwerkzeug zum Konvertieren zwischen JSON und Excel (.xlsx), CSV und TXT mit Unterstützung für Themen, Datenformatierung, parallele Verarbeitung und bidirektionale Konvertierung.
+* 🇬🇧 [English](README.md)
+* 🇨🇳 [简体中文](README.zh.md)
+* 🇷🇺 [Русский](README.ru.md)
+* 🇪🇸 [Español](README.es.md)
 
----
-
-## Funktionen
-
-* **Export**: Konvertieren von JSON-Dateien in die Formate `.xlsx`, `.csv` und `.txt`.
-* **Import**: Konvertieren von `.xlsx`, `.csv` und `.txt` Dateien in das JSON-Format.
-* Unterstützung für Themen: `black`, `green`, `red`, `purple`, `none`.
-* Korrekte Formatierung von Zahlen, Daten, Zeichenketten und booleschen Werten.
-* Parallele Verarbeitung mit konfigurierbarer Anzahl von Arbeitsthreads.
-* Optionale Performance-Metriken nach Abschluss.
+Dies ist ein **CLI-Tool** zum Konvertieren zwischen **JSON** und den Formaten **Excel (.xlsx), CSV und TXT** mit Unterstützung für **Themen**, **Datentypformatierung**, **Parallelverarbeitung** und **bidirektionale Konvertierung**.
 
 ---
 
-## Build
+## ✨ Funktionen
+
+* 🚀 **Exportieren**: JSON-Dateien in `.xlsx`-, `.csv`- und `.txt`-Formate umwandeln
+* 🔄 **Importieren**: `.xlsx`-, `.csv`- und `.txt`-Dateien in JSON umwandeln
+* 🎨 Unterstützt Themen: `black`, `green`, `red`, `purple`, `none`
+* 🔢 Korrekte Formatierung für **Zahlen**, **Datum**, **Strings** und **Boolean**
+* ⚙️ Parallele Verarbeitung mit konfigurierbarer Anzahl von Arbeitern
+* 📊 Optionale Anzeige von Leistungsmetriken nach Abschluss
+
+---
+
+## 🛠️ Build
 
 ```bash
 go build -o json2any ./cmd/app/main.go
@@ -30,7 +34,7 @@ go build -o json2any ./cmd/app/main.go
 
 ---
 
-## Installation (für globalen Zugriff)
+## 🚀 Installation (für systemweiten Zugriff)
 
 ```bash
 go install github.com/KaoriEl/json2any/v2@latest
@@ -38,33 +42,39 @@ go install github.com/KaoriEl/json2any/v2@latest
 
 ---
 
-## Nutzung
+## 📋 Verwendung
 
-### Export von JSON in andere Formate
+### JSON in andere Formate exportieren
 
-Konvertieren von JSON-Daten in die Formate `.xlsx`, `.csv` oder `.txt` mit anpassbaren Parametern.
+![example.png](img/example_xlsx.png)
 
-#### Beispiel: Export nach XLSX
+Konvertieren Sie JSON-Daten in `.xlsx`-, `.csv`- oder `.txt`-Formate mit anpassbaren Optionen.
+
+#### Beispiel: Export als XLSX
 
 ```bash
 json2any export -i example.json -o result.xlsx --format=xlsx --theme=green --max_workers=100 --show_metrics=true
 ```
 
-#### Beispiel: Export nach CSV
+#### Beispiel: Export als CSV
 
 ```bash
 json2any export -i example.json -o result.csv --format=csv --max_workers=10
 ```
 
-#### Beispiel: Export nach TXT
+#### Beispiel: Export als TXT
 
 ```bash
 json2any export -i example.json -o result.txt --format=txt --max_workers=5
 ```
 
-### Import von anderen Formaten nach JSON
+---
 
-Konvertieren von `.xlsx`, `.csv` oder `.txt` Dateien in das JSON-Format.
+### Importieren von anderen Formaten nach JSON
+
+![example\_import\_xlsx.png](img/example_import_txt.png)
+
+Konvertieren Sie `.xlsx`-, `.csv`- oder `.txt`-Dateien in JSON.
 
 #### Beispiel: Import von XLSX nach JSON
 
@@ -86,7 +96,7 @@ json2any import -i example.txt -o result.json --format=txt --max_workers=10
 
 ---
 
-## Hilfe
+## ❓ Hilfe
 
 ```bash
 json2any --help
@@ -94,13 +104,13 @@ json2any --help
 
 ---
 
-## CLI-Flags
+## ⚙️ CLI-Flags
 
-| Flag             | Beschreibung                                                                                                                                                                |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--input, -i`    | **(Erforderlich)** Pfad zur Eingabedatei (JSON für den Export, XLSX/CSV/TXT für den Import).                                                                                |
-| `--output, -o`   | Pfad zur Ausgabedatei. Standardwert: `random.xlsx` (für den Export) oder `output.json` (für den Import).                                                                    |
-| `--format`       | Ausgabeformat für den Export: `xlsx`, `csv` oder `txt`. Eingabeformat für den Import: `xlsx`, `csv` oder `txt`. Standardwert: `xlsx` für den Export, `xlsx` für den Import. |
-| `--theme`        | Tabellenthema: `black`, `green`, `red`, `purple`, `none`. Standardwert: `black`. (Nur für den Export)                                                                       |
-| `--max_workers`  | Anzahl der parallelen Arbeitsthreads. Ganzzahl > 0. Standardwert: `20`.                                                                                                     |
-| `--show_metrics` | Zeigt Leistungsmetriken nach Abschluss der Verarbeitung an. Standardwert: `false`.                                                                                          |
+| Flag             | Beschreibung                                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `--input, -i`    | **(Erforderlich)** Pfad zur Eingabedatei (JSON für Export, XLSX/CSV/TXT für Import).                                                 |
+| `--output, -o`   | Pfad zur Ausgabedatei. Standard: `random.xlsx` (für Export) oder `output.json` (für Import).                                         |
+| `--format`       | Ausgabeformat für Export: `xlsx`, `csv` oder `txt`. Eingabeformat für Import: `xlsx`, `csv` oder `txt`. Standard: `xlsx` für beides. |
+| `--theme`        | Tabellen-Thema: `black`, `green`, `red`, `purple`, `none`. Standard: `black`. (Nur Export)                                           |
+| `--max_workers`  | Anzahl paralleler Arbeiter. Ganzzahl > 0. Standard: `20`.                                                                            |
+| `--show_metrics` | Leistungsmetriken nach Abschluss anzeigen. Standard: `false`.                                                                        |
