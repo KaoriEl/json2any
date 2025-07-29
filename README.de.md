@@ -33,7 +33,7 @@ go build -o json2xlsx ./cmd/app/main.go
 ## Installation (für globalen Zugriff)
 
 ```bash
-go install github.com/KaoriEl/json2xlsx@latest
+go install github.com/KaoriEl/json2any@latest
 ```
 
 ---
