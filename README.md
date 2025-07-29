@@ -1,6 +1,10 @@
 # JSON to XLSX Exporter
 
-📘 Documentation available in other languages: [Русский](README.ru.md)
+📘 Documentation available in other languages:
+- [Русский](README.ru.md)
+- [简体中文](README.zh.md)
+- [Español](README.es.md)
+- [Deutsch](README.de.md)  
 
 A CLI tool for converting JSON files into Excel (.xlsx) format with support for theming, data type formatting, and parallel processing.
 
