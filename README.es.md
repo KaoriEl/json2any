@@ -33,7 +33,7 @@ go build -o json2any ./cmd/app/main.go
 ## Instalación (para acceso global)
 
 ```bash
-go install github.com/KaoriEl/json2any@latest
+go install github.com/KaoriEl/json2any/v2@latest
 ```
 
 ---
