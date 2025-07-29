@@ -27,7 +27,7 @@ func bigInt(n int) *big.Int {
 func FileSizeMB(path string) (string, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to stat file %s: %w", path, err)
 	}
 	sizeMB := float64(info.Size()) / (1024 * 1024)
 	return fmt.Sprintf("%.2f MB", sizeMB), nil
