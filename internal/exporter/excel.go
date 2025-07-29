@@ -3,7 +3,7 @@ package exporter
 import (
 	"fmt"
 
-	"github.com/KaoriEl/json2any/internal/models"
+	"github.com/KaoriEl/json2any/v2/internal/models"
 	"github.com/alperdrsnn/clime"
 	"github.com/xuri/excelize/v2"
 )

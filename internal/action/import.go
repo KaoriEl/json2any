@@ -2,17 +2,17 @@ package action
 
 import (
 	"fmt"
-	"github.com/KaoriEl/json2any/internal/definitions"
+	"github.com/KaoriEl/json2any/v2/internal/definitions"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/KaoriEl/json2any/internal/loader"
+	"github.com/KaoriEl/json2any/v2/internal/loader"
 
-	"github.com/KaoriEl/json2any/internal/exporter"
-	"github.com/KaoriEl/json2any/internal/processor"
-	"github.com/KaoriEl/json2any/internal/utils"
+	"github.com/KaoriEl/json2any/v2/internal/exporter"
+	"github.com/KaoriEl/json2any/v2/internal/processor"
+	"github.com/KaoriEl/json2any/v2/internal/utils"
 	"github.com/alperdrsnn/clime"
 	"github.com/urfave/cli/v2"
 )

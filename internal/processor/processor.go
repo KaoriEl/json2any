@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/KaoriEl/json2any/internal/models"
+	"github.com/KaoriEl/json2any/v2/internal/models"
 	"github.com/iancoleman/orderedmap"
 )
 

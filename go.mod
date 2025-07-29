@@ -1,4 +1,4 @@
-module github.com/KaoriEl/json2any
+module github.com/KaoriEl/json2any/v2
 
 go 1.24.4
 
