@@ -11,32 +11,32 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "json2xlsx",
-		Usage: "Конвертер JSON → Excel (.xlsx) с темами и параллельной обработкой",
+		Usage: "JSON → Excel (.xlsx) converter with themes and parallel processing",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "input",
 				Aliases:  []string{"i"},
-				Usage:    "Путь к входному JSON файлу (обязательно)",
+				Usage:    "Path to input JSON file (required)",
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:    "output",
 				Aliases: []string{"o"},
-				Usage:   "Путь к выходному XLSX файлу (по умолчанию random.xlsx)",
+				Usage:   "Path to output XLSX file (default random.xlsx)",
 			},
 			&cli.StringFlag{
 				Name:  "theme",
-				Usage: "Тема оформления: black, green, red, purple, none",
+				Usage: "Theme: black, green, red, purple, none",
 				Value: "black",
 			},
 			&cli.IntFlag{
 				Name:  "max_workers",
-				Usage: "Максимальное количество горутин (int > 0)",
+				Usage: "Maximum number of goroutines (int > 0)",
 				Value: 20,
 			},
 			&cli.BoolFlag{
 				Name:  "show_metrics",
-				Usage: "Выводить метрики по окончании работы",
+				Usage: "Display metrics after completion",
 				Value: false,
 			},
 		},

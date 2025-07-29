@@ -43,11 +43,11 @@ func (e *excelExporter) ExportWithTheme(
 
 	streamWriter, err := f.NewStreamWriter(sheet)
 	if err != nil {
-		return fmt.Errorf("не удалось создать поток записи: %w", err)
+		return fmt.Errorf("failed to create stream writer: %w", err)
 	}
 
 	if err := setColumnsWidth(streamWriter, keys, rows); err != nil {
-		return fmt.Errorf("ошибка при установке ширины столбцов: %w", err)
+		return fmt.Errorf("error setting column widths: %w", err)
 	}
 
 	headerFillColor, headerFontColor := getHeaderColors(theme)
@@ -63,12 +63,12 @@ func (e *excelExporter) ExportWithTheme(
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("не удалось создать стиль для заголовка: %w", err)
+		return fmt.Errorf("failed to create header style: %w", err)
 	}
 
 	altRowStyle, normalRowStyle, _, err := createRowStyles(f)
 	if err != nil {
-		return fmt.Errorf("не удалось создать стили строк: %w", err)
+		return fmt.Errorf("failed to create row styles: %w", err)
 	}
 
 	headers := make([]interface{}, len(keys))
@@ -76,7 +76,7 @@ func (e *excelExporter) ExportWithTheme(
 		headers[i] = excelize.Cell{StyleID: headerStyle, Value: key}
 	}
 	if err := streamWriter.SetRow("A1", headers); err != nil {
-		return fmt.Errorf("не удалось записать заголовок: %w", err)
+		return fmt.Errorf("failed to write header: %w", err)
 	}
 
 	total := len(rows)
@@ -87,7 +87,7 @@ func (e *excelExporter) ExportWithTheme(
 		}
 		cellName, _ := excelize.CoordinatesToCellName(1, i+2)
 		if err := streamWriter.SetRow(cellName, rowData); err != nil {
-			return fmt.Errorf("не удалось записать строку %d: %w", i+2, err)
+			return fmt.Errorf("failed to write row %d: %w", i+2, err)
 		}
 		if progress != nil {
 			progress(i+1, total)
@@ -95,7 +95,7 @@ func (e *excelExporter) ExportWithTheme(
 	}
 
 	if err := streamWriter.Flush(); err != nil {
-		return fmt.Errorf("ошибка при завершении записи потока: %w", err)
+		return fmt.Errorf("error finalizing stream write: %w", err)
 	}
 
 	colsCount := len(keys)
@@ -108,14 +108,15 @@ func (e *excelExporter) ExportWithTheme(
 			style = altRowStyle
 		}
 		if err := f.SetCellStyle(sheet, startCell, endCell, style); err != nil {
-			return fmt.Errorf("не удалось применить стиль к строке %d: %w", rowIdx, err)
+			return fmt.Errorf("failed to apply style to row %d: %w", rowIdx, err)
 		}
 	}
 
-	clime.SuccessLine("Экспорт в Excel завершен, сохраняю файл...")
+	clime.SuccessLine("Excel export completed, saving file...")
 	if err := f.SaveAs(filePath); err != nil {
-		return fmt.Errorf("не удалось сохранить файл: %w", err)
+		return fmt.Errorf("failed to save file: %w", err)
 	}
+
 	return nil
 }
 
@@ -170,15 +171,20 @@ func setColumnsWidth(streamWriter *excelize.StreamWriter, keys []string, rows []
 				maxWidth = w
 			}
 		}
+
 		colWidths[colIdx] = maxWidth*1.2 + 2
 		if colWidths[colIdx] < 10 {
 			colWidths[colIdx] = 10
+		}
+
+		if colWidths[colIdx] > 255 {
+			colWidths[colIdx] = 255
 		}
 	}
 
 	for i, width := range colWidths {
 		if err := streamWriter.SetColWidth(i+1, i+1, width); err != nil {
-			return fmt.Errorf("не удалось установить ширину столбца %d: %w", i+1, err)
+			return fmt.Errorf("failed to set width for column %d: %w", i+1, err)
 		}
 	}
 	return nil

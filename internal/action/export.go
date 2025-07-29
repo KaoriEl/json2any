@@ -2,6 +2,7 @@ package action
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -34,30 +35,35 @@ func Run(c *cli.Context) error {
 		return cli.Exit(err.Error(), 1)
 	}
 	if maxWorkers <= 0 {
-		return cli.Exit("max_workers должен быть положительным числом", 1)
+		return cli.Exit("max_workers must be a positive number", 1)
 	}
 
 	start := time.Now()
 
-	clime.InfoLine("Загрузка JSON-файла...")
+	clime.InfoLine("Loading JSON file...")
 	loadStart := time.Now()
+
+	if _, err := os.Stat(input); os.IsNotExist(err) {
+		clime.ErrorLine(fmt.Sprintf("File not found: %s", input))
+		return cli.Exit("", 1)
+	}
 
 	ld := loader.NewJSONLoader()
 	records, err := ld.Load(input)
 	if err != nil {
-		clime.ErrorBox("Ошибка загрузки", err.Error())
+		clime.ErrorLine(err.Error())
 		return cli.Exit("", 1)
 	}
 	if len(records) == 0 {
-		clime.ErrorLine("JSON-файл пуст")
+		clime.ErrorLine("JSON file is empty")
 		return cli.Exit("", 1)
 	}
 	loadDuration := time.Since(loadStart)
 
-	clime.SuccessLine(fmt.Sprintf("Загружено %d записей", len(records)))
+	clime.SuccessLine(fmt.Sprintf("Loaded %d records", len(records)))
 
 	bar := clime.NewProgressBar(int64(len(records))).
-		WithLabel("Обработка данных").
+		WithLabel("Processing data").
 		WithStyle(clime.ProgressStyleModern).
 		WithColor(clime.BrightCyanColor).
 		ShowRate(true)
@@ -83,7 +89,7 @@ func Run(c *cli.Context) error {
 		}
 	})
 	if err != nil {
-		clime.ErrorBox("Ошибка обработки", err.Error())
+		clime.ErrorLine(err.Error())
 		return cli.Exit("", 1)
 	}
 	processDuration := time.Since(processStart)
@@ -92,7 +98,7 @@ func Run(c *cli.Context) error {
 	keys := records[0].Keys()
 
 	exportBar := clime.NewProgressBar(int64(len(processed))).
-		WithLabel("Экспорт в Excel").
+		WithLabel("Exporting to Excel").
 		WithStyle(clime.ProgressStyleModern).
 		WithColor(clime.BrightGreenColor).
 		ShowRate(true)
@@ -109,16 +115,17 @@ func Run(c *cli.Context) error {
 		}
 	})
 	if err != nil {
-		clime.ErrorBox("Ошибка экспорта", err.Error())
+		clime.ErrorLine(err.Error())
+		time.Sleep(2 * time.Second) // Pause to show error
 		return cli.Exit("", 1)
 	}
 	exportDuration := time.Since(exportStart)
 
 	clime.NewBox().
-		WithTitle("✅ Успех").
+		WithTitle("✅ Success").
 		WithBorderColor(clime.GreenColor).
 		WithStyle(clime.BoxStyleRounded).
-		AddLine("Файл успешно создан: " + output).
+		AddLine("File successfully created: " + output).
 		Println()
 
 	if c.Bool("show_metrics") {
@@ -145,7 +152,7 @@ func validateTheme(theme string) error {
 		"none":   true,
 	}
 	if !validThemes[theme] {
-		return fmt.Errorf("некорректная тема: %s. Допустимые: black, green, red, purple, none", theme)
+		return fmt.Errorf("invalid theme: %s. Allowed: black, green, red, purple, none", theme)
 	}
 	return nil
 }
@@ -153,20 +160,20 @@ func validateTheme(theme string) error {
 func showMetric(output string, start time.Time, recordsIn, recordsOut int, loadDuration, processDuration, exportDuration time.Duration) {
 	fileSize, err := utils.FileSizeMB(output)
 	if err != nil {
-		fileSize = "не удалось определить размер"
+		fileSize = "failed to determine file size"
 	}
 
 	clime.NewTable().
-		AddColumn("Метрика").
-		AddColumn("Значение").
+		AddColumn("Metric").
+		AddColumn("Value").
 		SetColumnColor(1, clime.Info).
-		AddRow("Общее время", time.Since(start).Truncate(time.Millisecond).String()).
-		AddRow("Время загрузки JSON", loadDuration.String()).
-		AddRow("Время обработки", processDuration.String()).
-		AddRow("Время экспорта", exportDuration.String()).
-		AddRow("Кол-во записей (вход)", fmt.Sprintf("%d", recordsIn)).
-		AddRow("Кол-во записей (обработано)", fmt.Sprintf("%d", recordsOut)).
-		AddRow("Размер файла", fileSize).
-		AddRow("Скорость обработки", fmt.Sprintf("%.2f записей/сек", float64(recordsOut)/processDuration.Seconds())).
+		AddRow("Total time", time.Since(start).Truncate(time.Millisecond).String()).
+		AddRow("JSON load time", loadDuration.String()).
+		AddRow("Processing time", processDuration.String()).
+		AddRow("Export time", exportDuration.String()).
+		AddRow("Records count (input)", fmt.Sprintf("%d", recordsIn)).
+		AddRow("Records count (processed)", fmt.Sprintf("%d", recordsOut)).
+		AddRow("File size", fileSize).
+		AddRow("Processing speed", fmt.Sprintf("%.2f records/sec", float64(recordsOut)/processDuration.Seconds())).
 		Print()
 }
