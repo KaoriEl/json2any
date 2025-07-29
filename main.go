@@ -23,7 +23,7 @@ func main() {
 					&cli.StringFlag{Name: "input", Aliases: []string{"i"}, Usage: "Path to input JSON file", Required: true},
 					&cli.StringFlag{Name: "output", Aliases: []string{"o"}, Usage: "Path to output XLSX file", Value: definitions.DefaultOutputXLSX},
 					&cli.StringFlag{Name: "format", Usage: "Output format: xlsx, csv, txt", Value: definitions.DefaultFormatXLSX},
-					&cli.StringFlag{Name: "theme", Usage: "Theme: black, green, red, purple, none", Value: definitions.DefaultTheme},
+					&cli.StringFlag{Name: "theme", Usage: "Theme: black, green, red, purple, none | only for xlsx", Value: definitions.DefaultTheme},
 					&cli.IntFlag{Name: "max_workers", Usage: "Max goroutines", Value: definitions.DefaultMaxWorkers},
 					&cli.BoolFlag{Name: "show_metrics", Usage: "Show metrics after completion", Value: definitions.DefaultShowMetrics},
 				},
