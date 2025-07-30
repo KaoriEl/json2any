@@ -29,7 +29,7 @@ Dies ist ein **CLI-Tool** zum Konvertieren zwischen **JSON** und den Formaten **
 ## 🛠️ Build
 
 ```bash
-go build -o json2any ./cmd/app/main.go
+go build -o json2any ./main.go
 ```
 
 ---

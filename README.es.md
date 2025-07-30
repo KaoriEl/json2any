@@ -29,7 +29,7 @@ Esta es una **herramienta CLI** para convertir entre **JSON** y los formatos **E
 ## 🛠️ Compilación
 
 ```bash
-go build -o json2any ./cmd/app/main.go
+go build -o json2any ./main.go
 ```
 
 ---

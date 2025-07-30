@@ -29,7 +29,7 @@ A **CLI tool** for converting between **JSON** and **Excel (.xlsx), CSV, and TXT
 ## 🛠️ Build
 
 ```bash
-go build -o json2any ./cmd/app/main.go
+go build -o json2any ./main.go
 ```
 
 ---

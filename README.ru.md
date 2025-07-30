@@ -29,7 +29,7 @@
 ## 🛠️ Сборка
 
 ```bash
-go build -o json2any ./cmd/app/main.go
+go build -o json2any ./main.go
 ```
 
 ---
