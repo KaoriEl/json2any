@@ -1,6 +1,6 @@
 module github.com/KaoriEl/json2any/v2
 
-go 1.24.4
+go 1.24
 
 require (
 	github.com/alperdrsnn/clime v1.1.1
